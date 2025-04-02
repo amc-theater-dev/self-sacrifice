@@ -1,5 +1,5 @@
 # self-sacrifice
-**in an act that has been deemed heresy by R.E.P.O. headquarters**, this mod allows you sacrifice yourself and give your last remaining health ( >= 10 ) to your teammate
+**in an act that has been deemed heresy by R.E.P.O. headquarters**, this mod allows you sacrifice yourself and give your last remaining health ( <= 10 ) to your teammate
 
 for your act of sacrifice, one of a few events will occur
 
