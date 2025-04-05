@@ -5,7 +5,9 @@ for your act of sacrifice, one of a few events will occur
 
 - [common] recipient will heal for 25hp
 
-- [rare] recipient will die with you
+- [uncommon] recipient will die with you
+
+- [rare] recipient will receive a random +1 stat boost
 
 - [very rare] both donor and recipient will be healed to full
 
