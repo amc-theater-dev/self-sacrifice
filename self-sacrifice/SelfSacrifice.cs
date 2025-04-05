@@ -5,7 +5,7 @@ using Photon.Pun;
 
 namespace CustomHealthTransfer
 {
-    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.0.1")]
+    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.0.2")]
     public class SelfSacrificePlugin : BaseUnityPlugin
     {
         public static SelfSacrificePlugin Instance { get; private set; }
@@ -25,7 +25,7 @@ namespace CustomHealthTransfer
             Instance = this;
             Harmony harmony = new Harmony("mod.selfsacrifice");
             harmony.PatchAll();
-            Logger.LogInfo("SelfSacrifice 1.0.1 loaded");
+            Logger.LogInfo("SelfSacrifice 1.0.2 loaded");
         }
 
         // a patch which allows health donations at 10hp or less, and also applies some additional logic
