@@ -1,5 +1,10 @@
 # changelog
 
+## [1.0.2] (2025-04-05)
+
+* adjusted incorrect odds
+* re-arranged RNG outcomes to be more logical
+
 ## [1.0.1] (2025-04-05)
 
 * added an additional possible RNG outcome which results in a perm boost to a random stat for the recipient

@@ -90,12 +90,7 @@ namespace CustomHealthTransfer
                                             recipientHealth.HealOther(999, true);
                                             Instance.Logger.LogInfo("Self-Sacrifice: the gods smile on you! both donor and recipient were healed to full health");
                                         }
-                                        else if (rng <= 0.86f)
-                                        {
-                                            recipientHealth.HealOther(25, true);
-                                            Instance.Logger.LogInfo("Self-Sacrifice: donor sacrificed themselves and healed the recipient successfully");
-                                        }
-                                        else if (rng <= 0.96f)
+                                        else if (rng <= 0.11f)
                                         {
                                             string steamID = steamIDRef(__instance.playerAvatar);
                                             int boostType = Random.Range(0, 5);
@@ -124,10 +119,15 @@ namespace CustomHealthTransfer
                                                     break;
                                             }
                                         }
-                                        else
+                                        else if (rng <= 0.26f)
                                         {
                                             recipientHealth.HurtOther(999, Vector3.zero, false, -1);
                                             Instance.Logger.LogInfo("SelfSacrifice: donor sacrificed themselves to heal their friend, but the recipient was struck down. F in the chat");
+                                        }
+                                        else
+                                        {
+                                            recipientHealth.HealOther(25, true);
+                                            Instance.Logger.LogInfo("Self-Sacrifice: donor sacrificed themselves and healed the recipient successfully");
                                         }
                                     }
                                     else
