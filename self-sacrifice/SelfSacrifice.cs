@@ -5,7 +5,7 @@ using Photon.Pun;
 
 namespace CustomHealthTransfer
 {
-    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.0.0")]
+    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.0.1")]
     public class SelfSacrificePlugin : BaseUnityPlugin
     {
         public static SelfSacrificePlugin Instance { get; private set; }
@@ -18,13 +18,14 @@ namespace CustomHealthTransfer
         private static readonly AccessTools.FieldRef<PlayerHealth, int> maxHealthRef = AccessTools.FieldRefAccess<PlayerHealth, int>("maxHealth");
         private static readonly AccessTools.FieldRef<PlayerAvatar, bool> isTumblingRef = AccessTools.FieldRefAccess<PlayerAvatar, bool>("isTumbling");
         private static readonly AccessTools.FieldRef<PlayerAvatar, bool> isDisabledRef = AccessTools.FieldRefAccess<PlayerAvatar, bool>("isDisabled");
+        private static readonly AccessTools.FieldRef<PlayerAvatar, string> steamIDRef = AccessTools.FieldRefAccess<PlayerAvatar, string>("steamID");
 
         private void Awake()
         {
             Instance = this;
             Harmony harmony = new Harmony("mod.selfsacrifice");
             harmony.PatchAll();
-            Logger.LogInfo("SelfSacrifice 1.0.0 loaded");
+            Logger.LogInfo("SelfSacrifice 1.0.1 loaded");
         }
 
         // a patch which allows health donations at 10hp or less, and also applies some additional logic
@@ -77,11 +78,12 @@ namespace CustomHealthTransfer
                                     donorHealth.HurtOther(10, Vector3.zero, false, -1);
                                     donor.HealedOther();
 
-                                    // a RNG roll is performed if donor has 10 health or less - 84% chance to heal 25hp, 1% chance to heal both parties to full health, 15% chance to kill recipient
+                                    // a RNG roll is performed if donor has 10 health or less - 84% chance to heal 25hp, 15% chance to kill recipient, 10% chance to give recipient +1 random stat boost, 1% chance to heal both parties to full health
                                     if (donorCurrentHealth <= 10)
                                     {
                                         float rng = Random.Range(0f, 1f);
                                         Instance.Logger.LogInfo($"Self-Sacrifice: RNG roll = {rng:F4}");
+
                                         if (rng <= 0.01f)
                                         {
                                             donorHealth.HealOther(999, true);
@@ -93,15 +95,44 @@ namespace CustomHealthTransfer
                                             recipientHealth.HealOther(25, true);
                                             Instance.Logger.LogInfo("Self-Sacrifice: donor sacrificed themselves and healed the recipient successfully");
                                         }
+                                        else if (rng <= 0.96f)
+                                        {
+                                            string steamID = steamIDRef(__instance.playerAvatar);
+                                            int boostType = Random.Range(0, 5);
+
+                                            switch (boostType)
+                                            {
+                                                case 0:
+                                                    PunManager.instance.UpgradePlayerHealth(steamID);
+                                                    Instance.Logger.LogInfo("SelfSacrifice: recipient granted bonus MAX HEALTH");
+                                                    break;
+                                                case 1:
+                                                    PunManager.instance.UpgradePlayerEnergy(steamID);
+                                                    Instance.Logger.LogInfo("SelfSacrifice: recipient granted bonus STAMINA");
+                                                    break;
+                                                case 2:
+                                                    PunManager.instance.UpgradePlayerSprintSpeed(steamID);
+                                                    Instance.Logger.LogInfo("SelfSacrifice: recipient granted bonus SPRINT SPEED");
+                                                    break;
+                                                case 3:
+                                                    PunManager.instance.UpgradePlayerExtraJump(steamID);
+                                                    Instance.Logger.LogInfo("SelfSacrifice: recipient granted bonus EXTRA JUMP");
+                                                    break;
+                                                case 4:
+                                                    PunManager.instance.UpgradePlayerGrabStrength(steamID);
+                                                    Instance.Logger.LogInfo("SelfSacrifice: recipient granted bonus GRAB STRENGTH");
+                                                    break;
+                                            }
+                                        }
                                         else
                                         {
                                             recipientHealth.HurtOther(999, Vector3.zero, false, -1);
-                                            Instance.Logger.LogInfo("Self-Sacrifice: donor sacrificed themselves to heal their friend, but the recipient was struck down. F in the chat");
+                                            Instance.Logger.LogInfo("SelfSacrifice: donor sacrificed themselves to heal their friend, but the recipient was struck down. F in the chat");
                                         }
                                     }
                                     else
                                     {
-                                        recipientHealth.HealOther(25, true);
+                                        recipientHealth.HealOther(10, true);
                                     }
                                 }
                             }
