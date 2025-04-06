@@ -1,5 +1,11 @@
 # changelog
 
+## [1.0.4] (2025-04-06)
+
+* fixed some very broken grabbingTimer logic (sorry)
+* added some additional logging
+* changed namespace from beta name to final name
+
 ## [1.0.2] (2025-04-05)
 
 * adjusted incorrect odds

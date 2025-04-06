@@ -43,9 +43,6 @@
     <Reference Include="PhotonUnityNetworking">
       <HintPath>libraries\PhotonUnityNetworking.dll</HintPath>
     </Reference>
-    <Reference Include="REPOLib">
-      <HintPath>libraries\REPOLib.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
