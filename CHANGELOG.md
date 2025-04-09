@@ -1,5 +1,11 @@
 # changelog
 
+## [1.0.5] (2025-04-08)
+
+* removed logging on timer iteration as it was too noisy
+* made logging more consistent with my other mod
+* fixed bepinex version
+
 ## [1.0.4] (2025-04-06)
 
 * fixed some very broken grabbingTimer logic (sorry)
