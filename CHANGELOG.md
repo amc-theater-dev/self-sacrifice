@@ -1,5 +1,10 @@
 # changelog
 
+## [1.0.7] (2025-04-11)
+
+* fixed bug with hideLerp by switching patch from prefix to postfix
+* tidied up some other stuff
+
 ## [1.0.5] (2025-04-08)
 
 * removed logging on timer iteration as it was too noisy
