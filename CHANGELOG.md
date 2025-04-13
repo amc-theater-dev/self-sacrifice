@@ -1,5 +1,16 @@
 # changelog
 
+## [1.1.0] (2025-04-13)
+
+* the recipient of a sacrificial heal will now say a forced message in chat to indicate the outcome
+* visual indicators are applied for non-common outcomes as well
+* odds adjusted:
+
+> * common event: 69% chance
+> * uncommon event: 20% chance
+> * rare event: 10% chance
+> * very rare event: **1% chance**
+
 ## [1.0.7] (2025-04-11)
 
 * fixed bug with hideLerp by switching patch from prefix to postfix

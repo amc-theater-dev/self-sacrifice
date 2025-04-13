@@ -40,6 +40,10 @@
     <Reference Include="BepInEx">
       <HintPath>libraries\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="PhotonRealtime, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>libraries\PhotonRealtime.dll</HintPath>
+    </Reference>
     <Reference Include="PhotonUnityNetworking">
       <HintPath>libraries\PhotonUnityNetworking.dll</HintPath>
     </Reference>
