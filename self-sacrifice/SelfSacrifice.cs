@@ -9,7 +9,7 @@ using BepInEx.Logging;
 
 namespace SelfSacrifice
 {
-    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.0")]
+    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.1")]
     public class SelfSacrificePlugin : BaseUnityPlugin
     {
         public static SelfSacrificePlugin Instance { get; private set; }
@@ -27,7 +27,7 @@ namespace SelfSacrifice
             LogInstance = Logger;
             Harmony harmony = new Harmony("mod.selfsacrifice");
             harmony.PatchAll();
-            Logger.LogInfo("SelfSacrifice 1.1.0 loaded");
+            Logger.LogInfo("SelfSacrifice 1.1.1 loaded");
         }
 
         private static readonly string[] SuccessfulHealChats = new[]
@@ -57,6 +57,16 @@ namespace SelfSacrifice
             "you are an imbecile",
             "I will see you in hell",
             "I'm so angry I could fucking explode"
+        };
+
+        private static readonly string[] RareHealChats = new[]
+{
+            "the gods smile upon us",
+            "I love you",
+            "now we are undefeatable",
+            "I feel good as new",
+            "you have the luck of the gods",
+            "holy shit what a save"
         };
 
         // we call this as a coroutine to inflict a delayed kill on the recipient of a failed heal
@@ -137,17 +147,17 @@ namespace SelfSacrifice
                     {
                         float rng = UnityEngine.Random.Range(0f, 1f);
                         Instance.Logger.LogInfo($"Self-Sacrifice: RNG roll = {rng:F4}");
-
                         // 1% chance to heal both players to full
                         if (rng <= 0.01f)
                         {
                             recipientHealth.HealOther(999, true);
                             donorHealth.HealOther(999, true);
                             donor.HealedOther();
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, "the gods smile upon us! I love you", 0.3f, 0f);
+                            string msg = SuccessfulHealChats[UnityEngine.Random.Range(0, RareHealChats.Length)];
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.3f, 0f);
                             recipient.OverridePupilSize(3f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Love, 5f, 10);
-                            Instance.Logger.LogInfo("Self-Sacrifice: the gods smile on you! both donor and recipient healed to full");
+                            Instance.Logger.LogInfo("Self-Sacrifice: super-rare RNG roll achieved, both players healed to full");
                         }
                         // 20% chance to kill the recipient (in addition to the donor)
                         else if (rng <= 0.21f)

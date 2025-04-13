@@ -1,5 +1,9 @@
 # changelog
 
+## [1.1.1] (2025-04-13)
+
+* changed super-rare chat from hardcoded single message to random selection
+
 ## [1.1.0] (2025-04-13)
 
 * the recipient of a sacrificial heal will now say a forced message in chat to indicate the outcome
