@@ -60,7 +60,7 @@ namespace SelfSacrifice
         };
 
         private static readonly string[] RareHealChats = new[]
-{
+        {
             "the gods smile upon us",
             "I love you",
             "now we are undefeatable",
@@ -153,7 +153,7 @@ namespace SelfSacrifice
                             recipientHealth.HealOther(999, true);
                             donorHealth.HealOther(999, true);
                             donor.HealedOther();
-                            string msg = SuccessfulHealChats[UnityEngine.Random.Range(0, RareHealChats.Length)];
+                            string msg = RareHealChats[UnityEngine.Random.Range(0, RareHealChats.Length)];
                             recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.3f, 0f);
                             recipient.OverridePupilSize(3f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Love, 5f, 10);
@@ -164,7 +164,7 @@ namespace SelfSacrifice
                         {
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
                             recipient.StartCoroutine(Instance.DelayedKill(recipient, 5f));
-                            string msg = SuccessfulHealChats[UnityEngine.Random.Range(0, FailedHealChats.Length)];
+                            string msg = FailedHealChats[UnityEngine.Random.Range(0, FailedHealChats.Length)];
                             recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.2f, 0f);
                             recipient.OverridePupilSize(4f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Red, 5f, 10);

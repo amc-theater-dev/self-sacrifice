@@ -1,5 +1,9 @@
 # changelog
 
+## [1.1.2] (2025-04-13)
+
+* fixed a couple incorrect array refs (would have resulted in not all possible dialogue options being rolled)
+
 ## [1.1.1] (2025-04-13)
 
 * changed super-rare chat from hardcoded single message to random selection
