@@ -9,7 +9,7 @@ using BepInEx.Logging;
 
 namespace SelfSacrifice
 {
-    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.1")]
+    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.3")]
     public class SelfSacrificePlugin : BaseUnityPlugin
     {
         public static SelfSacrificePlugin Instance { get; private set; }
@@ -27,7 +27,7 @@ namespace SelfSacrifice
             LogInstance = Logger;
             Harmony harmony = new Harmony("mod.selfsacrifice");
             harmony.PatchAll();
-            Logger.LogInfo("SelfSacrifice 1.1.1 loaded");
+            Logger.LogInfo("SelfSacrifice 1.1.3 loaded");
         }
 
         private static readonly string[] SuccessfulHealChats = new[]
@@ -39,8 +39,8 @@ namespace SelfSacrifice
             "I drink your milkshake",
             "I hope this pays off",
             "I could have used a warning",
-            "I knew you always loved me",
-            "shazam!",
+            "I always knew you loved me",
+            "shazam! rest in peace",
             "well that guy is dead",
             "tell god I said hello",
             "I think a piece of shrapnel lodged itself in my scapula",
@@ -51,7 +51,7 @@ namespace SelfSacrifice
 
         private static readonly string[] FailedHealChats = new[]
         {
-            "oh fuck oh fuck oh fuck oh fuck",
+            "oh fuck oh fuck oh fuck oh fuck oh fuck oh fuck",
             "I can't believe you've done this",
             "you've doomed us both",
             "you are an imbecile",
@@ -165,7 +165,7 @@ namespace SelfSacrifice
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
                             recipient.StartCoroutine(Instance.DelayedKill(recipient, 5f));
                             string msg = FailedHealChats[UnityEngine.Random.Range(0, FailedHealChats.Length)];
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.2f, 0f);
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.1f, 0f);
                             recipient.OverridePupilSize(4f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Red, 5f, 10);
                             Instance.Logger.LogInfo("Self-Sacrifice: recipient struck down during sacrifice. F in chat");
@@ -210,9 +210,9 @@ namespace SelfSacrifice
                                     break;
                             }
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 1f, 0f);
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.2f, 0f);
                             recipient.OverridePupilSize(3f, 4, 1f, 1f, 15f, 0.3f, 3f);
-                            recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Green, 5f, 10);
+                            recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Love, 5f, 10);
                         }
                         // 69% chance to heal the recipient for 25hp
                         else
@@ -221,7 +221,7 @@ namespace SelfSacrifice
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
                             donor.HealedOther();
                             string msg = SuccessfulHealChats[UnityEngine.Random.Range(0, SuccessfulHealChats.Length)];
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 1f, 0f);
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.1f, 0f);
                             Instance.Logger.LogInfo("Self-Sacrifice: donor healed recipient successfully");
                         }
                     }
