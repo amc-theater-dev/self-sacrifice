@@ -1,5 +1,11 @@
 # changelog
 
+## [1.1.3] (2025-04-17)
+
+* chat speed adjustments
+* couple other minor tweaks
+* should be done for now
+
 ## [1.1.2] (2025-04-13)
 
 * fixed a couple incorrect array refs (would have resulted in not all possible dialogue options being rolled)
