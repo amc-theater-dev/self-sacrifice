@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace SelfSacrifice
 {
-    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.5")]
+    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.6")]
     public class SelfSacrificePlugin : BaseUnityPlugin
     {
         public static SelfSacrificePlugin Instance { get; private set; }

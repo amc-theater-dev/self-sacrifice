@@ -1,5 +1,10 @@
 # changelog
 
+## [1.1.6] (2025-04-28)
+
+* bumped repolib version, it got updated 2 hours before I pushed 1.1.5
+* ¯\_(ツ)_/¯
+
 ## [1.1.5] (2025-04-28)
 
 * offloaded chat messages to a separate resource file
