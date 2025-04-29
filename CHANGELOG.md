@@ -1,5 +1,10 @@
 # changelog
 
+## [1.1.5] (2025-04-28)
+
+* offloaded chat messages to a separate resource file
+* adjusted message speed for all heal outcomes as I had misinterpreted the speed parameter and set them way too slow
+
 ## [1.1.3] (2025-04-17)
 
 * chat speed adjustments

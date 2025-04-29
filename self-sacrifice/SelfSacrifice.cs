@@ -1,15 +1,17 @@
 using BepInEx;
+using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
 using Photon.Pun;
-using Photon.Realtime;
 using System.Linq;
 using System.Collections;
-using BepInEx.Logging;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 
 namespace SelfSacrifice
 {
-    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.3")]
+    [BepInPlugin("mod.selfsacrifice", "SelfSacrifice", "1.1.5")]
     public class SelfSacrificePlugin : BaseUnityPlugin
     {
         public static SelfSacrificePlugin Instance { get; private set; }
@@ -21,53 +23,74 @@ namespace SelfSacrifice
         private static readonly AccessTools.FieldRef<PlayerHealthGrab, float> grabbingTimerRef = AccessTools.FieldRefAccess<PlayerHealthGrab, float>("grabbingTimer");
         private static readonly AccessTools.FieldRef<PlayerAvatar, string> steamIDRef = AccessTools.FieldRefAccess<PlayerAvatar, string>("steamID");
 
+        private static List<string> SuccessfulHealChats = new List<string>();
+        private static List<string> FailedHealChats = new List<string>();
+        private static List<string> RareHealChats = new List<string>();
+
         private void Awake()
         {
             Instance = this;
             LogInstance = Logger;
             Harmony harmony = new Harmony("mod.selfsacrifice");
             harmony.PatchAll();
-            Logger.LogInfo("SelfSacrifice 1.1.3 loaded");
+            LoadHealMessages();
+            Logger.LogInfo("SelfSacrifice 1.1.5 loaded");
         }
 
-        private static readonly string[] SuccessfulHealChats = new[]
+        // load heal chats from an embedded text file
+        private void LoadHealMessages()
         {
-            "I'll never forget you",
-            "I won't waste this chance",
-            "thank you for the gift of life",
-            "nom nom nom, yummy HP",
-            "I drink your milkshake",
-            "I hope this pays off",
-            "I could have used a warning",
-            "I always knew you loved me",
-            "shazam! rest in peace",
-            "well that guy is dead",
-            "tell god I said hello",
-            "I think a piece of shrapnel lodged itself in my scapula",
-            "what the fuck just happened",
-            "this is fucked up, I'm transferring to lethal company",
-            "I did not consent to that"
-        };
+            SuccessfulHealChats = new List<string>();
+            FailedHealChats = new List<string>();
+            RareHealChats = new List<string>();
 
-        private static readonly string[] FailedHealChats = new[]
-        {
-            "oh fuck oh fuck oh fuck oh fuck oh fuck oh fuck",
-            "I can't believe you've done this",
-            "you've doomed us both",
-            "you are an imbecile",
-            "I will see you in hell",
-            "I'm so angry I could fucking explode"
-        };
+            try
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                string resourceName = assembly.GetManifestResourceNames()
+                    .FirstOrDefault(name => name.EndsWith("HealChats.txt"));
 
-        private static readonly string[] RareHealChats = new[]
-        {
-            "the gods smile upon us",
-            "I love you",
-            "now we are undefeatable",
-            "I feel good as new",
-            "you have the luck of the gods",
-            "holy shit what a save"
-        };
+                if (resourceName == null)
+                {
+                    Logger.LogWarning("HealChats.txt embedded resource not found");
+                    return;
+                }
+
+                // use a ResourceStream to load text file
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    List<string> currentList = SuccessfulHealChats;
+
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine().Trim();
+                        if (string.IsNullOrEmpty(line))
+                            continue;
+
+                        if (line.StartsWith("#"))
+                        {
+                            if (line.Contains("SuccessfulHealChats"))
+                                currentList = SuccessfulHealChats;
+                            else if (line.Contains("FailedHealChats"))
+                                currentList = FailedHealChats;
+                            else if (line.Contains("RareHealChats"))
+                                currentList = RareHealChats;
+
+                            continue;
+                        }
+
+                        currentList.Add(line);
+                    }
+                }
+
+                Logger.LogInfo($"loaded {SuccessfulHealChats.Count} successful chats, {FailedHealChats.Count} failed chats, {RareHealChats.Count} rare chats");
+            }
+            catch (System.Exception ex)
+            {
+                Logger.LogError($"failed to load HealChats.txt: {ex.Message}");
+            }
+        }
 
         // we call this as a coroutine to inflict a delayed kill on the recipient of a failed heal
         public IEnumerator DelayedKill(PlayerAvatar recipient, float delay)
@@ -153,8 +176,8 @@ namespace SelfSacrifice
                             recipientHealth.HealOther(999, true);
                             donorHealth.HealOther(999, true);
                             donor.HealedOther();
-                            string msg = RareHealChats[UnityEngine.Random.Range(0, RareHealChats.Length)];
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.3f, 0f);
+                            string msg = RareHealChats[UnityEngine.Random.Range(0, RareHealChats.Count)];
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 3f, 0f);
                             recipient.OverridePupilSize(3f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Love, 5f, 10);
                             Instance.Logger.LogInfo("Self-Sacrifice: super-rare RNG roll achieved, both players healed to full");
@@ -164,8 +187,8 @@ namespace SelfSacrifice
                         {
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
                             recipient.StartCoroutine(Instance.DelayedKill(recipient, 5f));
-                            string msg = FailedHealChats[UnityEngine.Random.Range(0, FailedHealChats.Length)];
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.1f, 0f);
+                            string msg = FailedHealChats[UnityEngine.Random.Range(0, FailedHealChats.Count)];
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 3f, 0f);
                             recipient.OverridePupilSize(4f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Red, 5f, 10);
                             Instance.Logger.LogInfo("Self-Sacrifice: recipient struck down during sacrifice. F in chat");
@@ -190,7 +213,7 @@ namespace SelfSacrifice
                                     break;
                                 case 2:
                                     PunManager.instance.UpgradePlayerSprintSpeed(steamID);
-                                    msg = "I feel fast as fuck boy";
+                                    msg = "I am speeeeeeeeeeed";
                                     Instance.Logger.LogInfo("Self-Sacrifice: recipient granted bonus SPRINT SPEED");
                                     break;
                                 case 3:
@@ -210,7 +233,7 @@ namespace SelfSacrifice
                                     break;
                             }
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.2f, 0f);
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 3f, 0f);
                             recipient.OverridePupilSize(3f, 4, 1f, 1f, 15f, 0.3f, 3f);
                             recipient.playerHealth.EyeMaterialOverride(PlayerHealth.EyeOverrideState.Love, 5f, 10);
                         }
@@ -220,8 +243,8 @@ namespace SelfSacrifice
                             recipientHealth.HealOther(25, true);
                             donorHealth.HurtOther(10, Vector3.zero, false, -1);
                             donor.HealedOther();
-                            string msg = SuccessfulHealChats[UnityEngine.Random.Range(0, SuccessfulHealChats.Length)];
-                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 0.1f, 0f);
+                            string msg = SuccessfulHealChats[UnityEngine.Random.Range(0, SuccessfulHealChats.Count)];
+                            recipient.GetComponent<PhotonView>().RPC("ForcePossessChat", recipient.GetComponent<PhotonView>().Owner, msg, 3f, 0f);
                             Instance.Logger.LogInfo("Self-Sacrifice: donor healed recipient successfully");
                         }
                     }
